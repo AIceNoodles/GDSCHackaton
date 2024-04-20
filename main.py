@@ -3,8 +3,6 @@ import streamlit as st
 from configs import OAI_MODEL, EXPORT_DIR
 from utils import export_current_conversation, num_tokens_from_messages
 
-
-
 st.title(f"Chat with {OAI_MODEL} model using Streamlit")
 
 # File uploader
@@ -42,12 +40,12 @@ if prompt := st.chat_input("What is up?"):
         message_placeholder = st.empty()
         full_response = ""
         for response in client.chat.completions.create(
-            model=st.session_state["openai_model"],
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
+                model=st.session_state["openai_model"],
+                messages=[
+                    {"role": m["role"], "content": m["content"]}
+                    for m in st.session_state.messages
+                ],
+                stream=True,
         ):
             full_response += (response.choices[0].delta.content or "")
             message_placeholder.markdown(full_response + "▌")
@@ -55,4 +53,6 @@ if prompt := st.chat_input("What is up?"):
     st.session_state.messages.append({"role": "assistant", "content": full_response})
 
 # Use st.markdown with inline HTML styling to change text color
-st.markdown(f"<span style='color:red'>Total tokens used till now in conversation (your input + model's output): {num_tokens_from_messages(st.session_state.messages, OAI_MODEL)}</span>", unsafe_allow_html=True)
+st.markdown(
+    f"<span style='color:red'>Total tokens used till now in conversation (your input + model's output): {num_tokens_from_messages(st.session_state.messages, OAI_MODEL)}</span>",
+    unsafe_allow_html=True)
