@@ -1,14 +1,46 @@
 from typing import List
-import json
 
-rag_instructions = (
-    "Given the context information and not prior knowledge, answer the query asking about citations over different topics.\n"
-    "Please provide your answer in the form of a structured JSON format containing a list of authors as the citations. Some examples are given below."
-    "\n\nQuery: Which citation discusses the impact of safety RLHF measured by reward model score distributions?\nResponse: {'citations': [{'author': 'Llama 2: Open Foundation and Fine-Tuned Chat Models', 'year': 24, 'desc': 'Impact of safety RLHF measured by reward model score distributions. Left: safety reward model scores of generations on the Meta Safety test set. The clustering of samples in the top left corner suggests the improvements of model safety. Right: helpfulness reward model scores of generations on the Meta Helpfulness test set.'}]}\n\nQuery: Which citations are mentioned in the section on RLHF Results?\nResponse: {'citations': [{'author': 'Gilardi et al.', 'year': 2023, 'desc': ''}, {'author': 'Huang et al.', 'year': 2023, 'desc': ''}]}\n")
+rag_instructions = """
+You are a learning teacher agent, helping students by answering questions.
+
+Generate your response by following the steps below:
+
+1. Recursively break-down the question into smaller sub-questions
+
+2. For each atomic question/directive:
+
+2a. Select the most relevant information from the context in light of the conversation history
+
+3. Generate a draft response using the selected information, whose brevity/detail are tailored to the poster’s expertise
+
+4. Remove duplicate content from the draft response
+
+5. Generate your final response after adjusting it to increase accuracy and relevance
+
+6. Now only show your final response! Do not provide any explanations or details
+
+retrieved information:
+
+{rag_output}
+
+CONVERSATION HISTORY:
+
+{conversation_history}
+
+question:
+
+{user_question}
+
+student expertise level: {expertise_level}
+
+Beginners want detailed answers with explanations. Experts want concise answers without explanations.
+
+If you are unable to help the reviewer, let them know that help is on the way.
+"""
+
+expertise_level = "intermediate"
 
 
-def prompt_generator(rag_output: List[str], user_input: str, rag_instructions: str = rag_instructions):
-    return (rag_instructions +
-            "User Input: \n" + user_input +
-            "\n\nRAG Response: \n" + "\n".join(rag_output))
-
+def prompt_generator(rag_output: List[str], user_input, conversation_history="", expertise_level=expertise_level):
+    rag_instructions.format(rag_output="\n-------\n".join(rag_output), conversation_history=conversation_history, user_question=user_input,
+                            expertise_level=expertise_level)
