@@ -23,10 +23,6 @@ retrieved information:
 
 {rag_output}
 
-CONVERSATION HISTORY:
-
-{conversation_history}
-
 question:
 
 {user_question}
@@ -41,6 +37,10 @@ If you are unable to help the reviewer, let them know that help is on the way.
 expertise_level = "intermediate"
 
 
-def prompt_generator(rag_output: List[str], user_input, conversation_history="", expertise_level=expertise_level):
-    rag_instructions.format(rag_output="\n-------\n".join(rag_output), conversation_history=conversation_history, user_question=user_input,
+def assemble_prompt(rag_output: List[str], user_input: str, expertise_level=expertise_level):
+    """
+    Compose a prompt with retrieved documents and user query.
+    """
+    new_message = rag_instructions.format(rag_output="\n-------\n".join(rag_output), user_question=user_input,
                             expertise_level=expertise_level)
+    return new_message

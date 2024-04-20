@@ -5,11 +5,9 @@ from transformers import AutoTokenizer
 from langchain.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
-
-
-
-files: list[dict]  # has a key "text" and other metadata keys
-user_query: str  # the user's query
+from openai import OpenAI
+client = OpenAI()
+from prompt_generator import assemble_prompt
 
 
 RAW_KNOWLEDGE_BASE = [
@@ -81,5 +79,27 @@ KNOWLEDGE_VECTOR_DATABASE = FAISS.from_documents(
     docs_processed, embedding_model, distance_strategy=DistanceStrategy.COSINE
 )
 
+
+files: list[dict]  # has a key "text" and other metadata keys
+user_query: str  # the user's query
+expertise_level: str  # the user's expertise level
+messages: list[dict]  # the conversation history
+model: str  # the model to use for the completion
+
 query_vector = embedding_model.embed_query(user_query)
 retrieved_docs = KNOWLEDGE_VECTOR_DATABASE.similarity_search(query=user_query, k=5)
+
+new_message = assemble_prompt(
+    [doc.page_content for doc in retrieved_docs],
+    user_query,
+    expertise_level=expertise_level,
+)
+
+messages = messages + [{"role": "user", "content": new_message}]
+
+completion = client.chat.completions.create(
+  model="gpt-3.5-turbo",
+  messages=messages,
+)
+
+messages = messages + [{"role": "assistant", "content": get_response_message(completion)}]
