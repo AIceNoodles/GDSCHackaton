@@ -1,6 +1,7 @@
 import pandas as pd 
 import streamlit as st
 from datetime import datetime
+import os 
 
 
 try:
@@ -12,8 +13,11 @@ except FileNotFoundError:
 st.header("Your Study Planner")
 
 uploaded_file = st.file_uploader("Upload your chapter")
+directory = "./uploaded_chapters"
+if not os.path.exists(directory):
+    os.makedirs(directory)
 if uploaded_file is not None:
-    file_path = f"uploaded_chapters/{uploaded_file.name}"  
+    file_path = f"./uploaded_chapters/{uploaded_file.name}"  
     try:
         with open(file_path, "wb") as f:  
             f.write(uploaded_file.getbuffer()) 
