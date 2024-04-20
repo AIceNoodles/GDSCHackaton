@@ -9,6 +9,7 @@ EXPORT_FILE_EXTENSION = ".csv"
 if not os.path.exists(EXPORT_DIR):
     os.makedirs(EXPORT_DIR, exist_ok=False)
 
+
 def get_export_file_path() -> str:
     # Get the current date and time
     now = datetime.now()
@@ -17,6 +18,7 @@ def get_export_file_path() -> str:
     export_file_name = now.strftime("%Y%m%d_%H%M%S")
 
     return os.path.join(EXPORT_DIR, export_file_name + EXPORT_FILE_EXTENSION)
+
 
 def export_current_conversation(current_conversation: list[dict]):
     export_file_path = get_export_file_path()
@@ -28,6 +30,8 @@ def export_current_conversation(current_conversation: list[dict]):
 """
 Copied from https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
 """
+
+
 def num_tokens_from_messages(messages: list[dict], model: str) -> int:
     """Return the number of tokens used by a list of messages."""
     if not messages or len(messages) == 0:
@@ -44,7 +48,7 @@ def num_tokens_from_messages(messages: list[dict], model: str) -> int:
         "gpt-4-32k-0314",
         "gpt-4-0613",
         "gpt-4-32k-0613",
-        }:
+    }:
         tokens_per_message = 3
         tokens_per_name = 1
     elif model == "gpt-3.5-turbo-0301":
