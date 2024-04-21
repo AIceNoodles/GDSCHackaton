@@ -63,6 +63,7 @@ def get_expertise_level_label(numeric_level):
         if numeric_level in range_values:
             return label
 
+
 with st.sidebar:
     expertise_slider_obj = st.slider(
         "Set the Difficulty Level:",
