@@ -19,7 +19,8 @@ Generate your response by following the steps below:
 
 6. Now only show your final response! Do not provide any explanations or details
 
-7. IMPORTANT: whenever you use one of the retrieved information below, put a [number] at the end of the sentence to indicate the source.
+7. whenever you use one of the retrieved information below, put a [number] at the end of the sentence to indicate the source.
+Do not add numbers if you are not using sources
 
 retrieved information (here [1], [2], etc. are placeholders for the retrieved documents):
 
@@ -57,7 +58,8 @@ Generate your response by following the steps below:
 
 6. Now only show your final response! Do not provide any explanations or details
 
-7. IMPORTANT: whenever you use one of the retrieved information below, put a [number] at the end of the sentence to indicate the source.
+7. whenever you use one of the retrieved information below, put a [number] at the end of the sentence to indicate the source.
+Do not add numbers if you are not using sources
 
 retrieved information (here [1], [2], etc. are placeholders for the retrieved documents):
 

@@ -126,13 +126,13 @@ class RagInstance:
 
         messages = messages + [{"role": "user", "content": new_message}]
 
-        # completion = client.chat.completions.create(
-        #     model="gpt-3.5-turbo",
-        #     messages=messages
-        # )
-        # response = get_response_message(completion)
-        #
-        response = "some response (test purposes)"
+        completion = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+        )
+        response = get_response_message(completion)
+
+        # response = "some response (test purposes)"
 
         messages = messages + [{"role": "assistant", "content": response}]
 

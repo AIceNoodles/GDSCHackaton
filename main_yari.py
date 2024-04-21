@@ -10,14 +10,7 @@ from collections import defaultdict
 
 st.title(f"AIce Tutor")
 
-# todo: why tf does this not work?
-if "rag_instance" not in st.session_state:
-    print("Creating new rag instance")
-    st.session_state["rag_instance"] = RagInstance()
-
-
-print(st.session_state)
-rag_instance = st.session_state["rag_instance"]
+rag_instance = RagInstance()
 
 pages = []
 
@@ -66,7 +59,10 @@ if mode == "Answer":
         st.session_state['messages'].append({"role": "user", "content": user_response})
         with st.chat_message("user"):
             st.markdown(user_response)
-        model_response = "some model response"
+        model_response, messages = rag_instance.query(prompt, "intermediate", st.session_state['messages'],
+                                                      is_correctness=True,
+                                                      original_question=st.session_state['questions'][-1])
+
         st.session_state['messages'].append({"role": "assistant", "content": model_response})
         with st.chat_message("assistant"):
             st.markdown(model_response)
@@ -78,8 +74,9 @@ else:
         st.session_state['messages'] = []
         with st.chat_message("user"):
             st.markdown(prompt)
-        full_response, messages = "Full question to user: " + prompt, st.session_state['messages'] +[{"role": "user", "content": "full_responseee : " + prompt}]
-        # full_response, messages = rag_instance.query(prompt, "intermediate", [])
+        # full_response, messages = "Full question to user: " + prompt, st.session_state['messages'] +[{"role": "user", "content": "full_responseee : " + prompt}]
+
+        full_response, messages = rag_instance.query(prompt, "intermediate", [])
 
         with st.chat_message("assistant"):
             st.markdown(full_response)
