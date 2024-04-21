@@ -1,6 +1,5 @@
 import os
 import subprocess
-from langchain.docstore.document import Document as doc
 
 
 #### Running Nougat to get the mmd in a folder called nougat_output 

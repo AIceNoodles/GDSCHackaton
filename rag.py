@@ -6,7 +6,6 @@ from langchain.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
 from openai import OpenAI
-from file_parser import from_file_to_document
 
 client = OpenAI()
 from prompt_generator import assemble_prompt

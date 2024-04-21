@@ -2,15 +2,14 @@ from openai import OpenAI
 import streamlit as st
 
 import file_parser
-from configs import OAI_MODEL, EXPORT_DIR
+from configs import OAI_MODEL
 from rag import RagInstance
-from utils import export_current_conversation, num_tokens_from_messages
-import pdfplumber
 from collections import defaultdict
 
 st.title(f"AIce Tutor")
 
 rag_instance = RagInstance()
+
 
 pages = []
 # File uploader

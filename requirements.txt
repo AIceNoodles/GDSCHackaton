@@ -1,5 +1,0 @@
-transformers
-torch
-langchain
-openai
-nougat

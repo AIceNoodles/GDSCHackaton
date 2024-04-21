@@ -27,11 +27,6 @@ def export_current_conversation(current_conversation: list[dict]):
     print(f"Conversation exported successfully to {export_file_path}")
 
 
-"""
-Copied from https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
-"""
-
-
 def num_tokens_from_messages(messages: list[dict], model: str) -> int:
     """Return the number of tokens used by a list of messages."""
     if not messages or len(messages) == 0:

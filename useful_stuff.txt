@@ -1,2 +1,0 @@
-nougat: facebook library that converts pdfs into latex source code
-
