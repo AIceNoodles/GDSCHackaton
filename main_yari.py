@@ -1,13 +1,17 @@
 from openai import OpenAI
 import streamlit as st
+
+import file_parser
 from configs import OAI_MODEL, EXPORT_DIR
+from rag import RagInstance
 from utils import export_current_conversation, num_tokens_from_messages
 import pdfplumber
-from constants import PromptConstants
 from collections import defaultdict
 
-
 st.title(f"AIce Tutor")
+
+rag_instance = RagInstance()
+
 pages = []
 # File uploader
 uploaded_file = st.file_uploader("Upload your file", type=['txt', 'pdf', 'png', 'jpg', 'jpeg', 'csv'])
@@ -15,11 +19,16 @@ if uploaded_file is not None:
     # Check if the uploaded file is a PDF
     if uploaded_file.type == "application/pdf":
         try:
-            with pdfplumber.open(uploaded_file) as pdf:
-                # Extract text from the first page
-                first_page = pdf.pages[0]
-                pages = list(pages)
-                extracted_text = first_page.extract_text()
+            # with pdfplumber.open(uploaded_file) as pdf:
+            # Extract text from the first page
+            # first_page = pdf.pages[0]
+            # pages = list(pages)
+            # extracted_text = first_page.extract_text()
+
+            extracted_text = file_parser.from_file_to_document(uploaded_file)
+
+            rag_instance.expand_knowledge_vector_db(extracted_text)
+
             st.text_area(f"Extracted Text, type {type(pages)}", extracted_text, height=300)
         except Exception as e:
             st.error("Error processing the PDF file.")
@@ -77,8 +86,7 @@ else:
         # Process the question
         # Here you would typically send the prompt to the AI model
         response = "Simulated response for demonstration."  # Simulated response
+
         st.session_state['questions'].append(prompt)
         st.session_state['messages'][prompt].append({"role": "assistant", "content": prompt})
         print(st.session_state['questions'], st.session_state['messages'])
-
-
