@@ -40,7 +40,6 @@ if uploaded_file is not None:
         st.write("File uploaded successfully!")
 
 # Create a button
-file_text = " ".join(pages[3:6])
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = OAI_MODEL
 
@@ -48,8 +47,7 @@ if 'questions' not in st.session_state:
     st.session_state['questions'] = []
 
 if 'messages' not in st.session_state:
-    st.session_state['messages'] = defaultdict(list)
-    #
+    st.session_state['messages'] = []
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -58,46 +56,35 @@ mode = st.sidebar.radio(
     ('Question', 'Answer')
 )
 
-# selected_question = st.sidebar.selectbox(
-#     "Select a question to view responses:",
-#     options=st.session_state['questions'],
-#     index=0,
-# )
-
-if mode == "Answer" and st.session_state['messages'] and selected_question:
-    for message in st.session_state.messages[selected_question]:
+### Logic for when we listen for user's answer
+if mode == "Answer":
+    for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-
-### Logic for when we listen for user's answer
-if mode == "Answer" and selected_question is not None:
     if prompt := st.chat_input("Try to answer:"):
         user_response = "some user response"
-        st.session_state['messages'][selected_question].append({"role": "user", "content": user_response})
+        st.session_state['messages'].append({"role": "user", "content": user_response})
         with st.chat_message("user"):
-            st.markdown(prompt)
+            st.markdown(user_response)
         model_response = "some model response"
-        st.session_state['messages'][selected_question].append({"role": "assistant", "content": model_response})
+        st.session_state['messages'].append({"role": "assistant", "content": model_response})
         with st.chat_message("assistant"):
-            st.markdown(prompt)
+            st.markdown(model_response)
         # print(st.session_state['questions'], st.session_state['messages'])
 else:
     mode = "Question"
     if prompt := st.chat_input("Ask a question:"):
         # Add question to session state
-
+        st.session_state['messages'] = []
         with st.chat_message("user"):
             st.markdown(prompt)
-        # Process the question
-        # Here you would typically send the prompt to the AI model
-        full_response, messages = rag_instance.query(prompt, "intermediate", [])
+        full_response, messages = "Full question to user: " + prompt, st.session_state['messages'] +[{"role": "user", "content": "full_responseee : " + prompt}]
+        # full_response, messages = rag_instance.query(prompt, "intermediate", [])
 
         with st.chat_message("assistant"):
             st.markdown(full_response)
 
-        st.session_state['questions'].append(prompt)
-        st.session_state['messages'][prompt].append({"role": "user", "content": prompt})
-        print(st.session_state['questions'], st.session_state['messages'])
         st.session_state['questions'].append(full_response)
-        st.session_state['messages'][full_response].append({"role": "assistant", "content": full_response})
+        st.session_state['messages'].append({"role": "assistant", "content": full_response})
+        print(st.session_state['questions'], st.session_state['messages'])
         # print(st.session_state['questions'], st.session_state['messages'])
