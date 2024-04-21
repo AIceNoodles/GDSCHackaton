@@ -8,7 +8,7 @@ from configs import OAI_MODEL
 from rag import RagInstance
 from collections import defaultdict
 
-st.title(f"AIce Tutor")
+st.title(f"SocrAItes")
 
 pages = []
 
