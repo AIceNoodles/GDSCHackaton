@@ -39,12 +39,38 @@ if 'questions' not in st.session_state:
 if 'messages' not in st.session_state:
     st.session_state['messages'] = []
 
+if 'slider' not in st.session_state:
+    st.session_state['slider'] = 5
+
+if 'expertise_level' not in st.session_state:
+    st.session_state['expertise_level'] = 'Intermediate'
+
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 mode = st.sidebar.radio(
     "Choose your AI Tutor Mode:",
     ('Question', 'Answer')
 )
+
+def get_expertise_level_label(numeric_level):
+    expertise_level_map = {
+        'Beginner': range(1, 4),  
+        'Intermediate': range(4, 8),  
+        'Expert': range(8, 11) 
+    }
+    for label, range_values in expertise_level_map.items():
+        if numeric_level in range_values:
+            return label
+
+expertise_level = st.sidebar.slider(
+    "Set the Difficulty Level:",
+    min_value=1,  
+    max_value=10,  
+    value=st.session_state['slider'] 
+)
+st.session_state['slider'] = expertise_level
+st.sidebar.write(f"Current Difficulty Level: {get_expertise_level_label(st.session_state['slider'])}")
+st.session_state['expertise_level'] = get_expertise_level_label(st.session_state['expertise_level'])
 
 ### Logic for when we listen for user's answer
 if mode == "Answer":
@@ -60,7 +86,7 @@ if mode == "Answer":
         retrieved_docs = file_parser.get_all_processed_files()
         rag_instance.expand_knowledge_vector_db(retrieved_docs)
 
-        model_response, messages, used_docs = rag_instance.query(prompt, "intermediate", st.session_state['messages'],
+        model_response, messages, used_docs = rag_instance.query(prompt, st.session_state['expertise_level'], st.session_state['messages'],
                                                                  is_correctness=True,
                                                                  original_question=st.session_state['questions'][-1])
 
@@ -85,7 +111,7 @@ else:
         retrieved_docs = file_parser.get_all_processed_files()
         rag_instance.expand_knowledge_vector_db(retrieved_docs)
 
-        model_response, messages, used_docs = rag_instance.query(prompt, "intermediate", [])
+        model_response, messages, used_docs = rag_instance.query(prompt, st.session_state['expertise_level'] , [])
 
         with st.chat_message("assistant"):
             st.markdown(model_response)
