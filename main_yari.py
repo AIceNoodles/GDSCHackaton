@@ -10,26 +10,23 @@ from collections import defaultdict
 
 st.title(f"AIce Tutor")
 
-rag_instance = RagInstance()
 
-# rag_instance.expand_knowledge_vector_db(file_parser.get_all_processed_files())
+# todo: why tf does this not work?
+if "rag_instance" not in st.session_state:
+    st.session_state["rag_instance"] = RagInstance()
+rag_instance = st.session_state["rag_instance"]
+
+
 
 pages = []
+
 # File uploader
 uploaded_file = st.file_uploader("Upload your file", type=['txt', 'pdf', 'png', 'jpg', 'jpeg', 'csv'])
 if uploaded_file is not None:
     # Check if the uploaded file is a PDF
     if uploaded_file.type == "application/pdf":
         try:
-            # with pdfplumber.open(uploaded_file) as pdf:
-            # Extract text from the first page
-            # first_page = pdf.pages[0]
-            # pages = list(pages)
-            # extracted_text = first_page.extract_text()
-
             extracted_text = file_parser.from_file_to_document(uploaded_file)
-
-            print("Extracted text is:", extracted_text)
 
             rag_instance.expand_knowledge_vector_db(extracted_text)
 
