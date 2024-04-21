@@ -85,18 +85,22 @@ else:
             st.markdown(prompt)
         # Process the question
         # Here you would typically send the prompt to the AI model
-        full_response = ""
-        message_placeholder = st.empty()
-        for response in client.chat.completions.create(
-                model=st.session_state["openai_model"],
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                stream=True,
-        ):
-            full_response += (response.choices[0].delta.content or "")
-            # message_placeholder.markdown(full_response + "▌")
+
+        full_response = rag_instance.query(prompt, "intermediate", st.session_state['messages'])
+        # full_response = ""
+        # message_placeholder = st.empty()
+        # for response in client.chat.completions.create(
+        #         model=st.session_state["openai_model"],
+        #         messages=[
+        #             {"role": "user", "content": prompt}
+        #         ],
+        #         stream=True,
+        # ):
+        #     full_response += (response.choices[0].delta.content or "")
+
+        # message_placeholder.markdown(full_response + "▌")
         # message_placeholder.markdown(full_response)
+
         with st.chat_message("assistant"):
             st.markdown(full_response)
         response = "Simulated response for demonstration."  # Simulated response
