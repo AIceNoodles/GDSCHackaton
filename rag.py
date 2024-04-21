@@ -2,7 +2,7 @@ from typing import List, Optional
 from langchain.docstore.document import Document as LangchainDocument
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from transformers import AutoTokenizer
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores.utils import DistanceStrategy
 from openai import OpenAI
@@ -29,8 +29,9 @@ EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 embedding_model = HuggingFaceEmbeddings(
     model_name=EMBEDDING_MODEL_NAME,
     multi_process=True,
-    model_kwargs={"device": "cuda"},
+    model_kwargs={"device": "cpu"},
     encode_kwargs={"normalize_embeddings": True},  # set True for cosine similarity
+
 )
 
 
@@ -105,9 +106,8 @@ class RagInstance:
     # model: str  # the model to use for the completion
 
     def query(self, user_query, expertise_level, messages):
-        query_vector = embedding_model.embed_query(user_query)
         if self.knowledge_vect_db:
-            retrieved_docs = self.knowledge_vect_db.similarity_search(query=query_vector, k=5)
+            retrieved_docs = self.knowledge_vect_db.similarity_search(query=user_query, k=5)
         else:
             retrieved_docs = []
 
@@ -126,4 +126,4 @@ class RagInstance:
 
         messages = messages + [{"role": "assistant", "content": get_response_message(completion)}]
 
-        return messages
+        return get_response_message(completion), messages

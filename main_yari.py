@@ -1,3 +1,5 @@
+import traceback
+
 from openai import OpenAI
 import streamlit as st
 
@@ -10,6 +12,7 @@ st.title(f"AIce Tutor")
 
 rag_instance = RagInstance()
 
+# rag_instance.expand_knowledge_vector_db(file_parser.get_all_processed_files())
 
 pages = []
 # File uploader
@@ -26,12 +29,15 @@ if uploaded_file is not None:
 
             extracted_text = file_parser.from_file_to_document(uploaded_file)
 
+            print("Extracted text is:", extracted_text)
+
             rag_instance.expand_knowledge_vector_db(extracted_text)
 
             st.text_area(f"Extracted Text, type {type(pages)}", extracted_text, height=300)
         except Exception as e:
             st.error("Error processing the PDF file.")
             st.write(f"error is {str(e)}")
+            traceback.print_exc()
     else:
         st.write("File uploaded successfully!")
 
@@ -53,11 +59,11 @@ mode = st.sidebar.radio(
     ('Question', 'Answer')
 )
 
-selected_question = st.sidebar.selectbox(
-    "Select a question to view responses:",
-    options=st.session_state['questions'],
-    index=0,
-)
+# selected_question = st.sidebar.selectbox(
+#     "Select a question to view responses:",
+#     options=st.session_state['questions'],
+#     index=0,
+# )
 
 if mode == "Answer" and st.session_state['messages'] and selected_question:
     for message in st.session_state.messages[selected_question]:
@@ -85,27 +91,13 @@ else:
         # Process the question
         # Here you would typically send the prompt to the AI model
 
-        full_response = rag_instance.query(prompt, "intermediate", st.session_state['messages'])
-        # full_response = ""
-        # message_placeholder = st.empty()
-        # for response in client.chat.completions.create(
-        #         model=st.session_state["openai_model"],
-        #         messages=[
-        #             {"role": "user", "content": prompt}
-        #         ],
-        #         stream=True,
-        # ):
-        #     full_response += (response.choices[0].delta.content or "")
-
-        # message_placeholder.markdown(full_response + "▌")
-        # message_placeholder.markdown(full_response)
+        full_response, messages = rag_instance.query(prompt, "intermediate", [])
 
         with st.chat_message("assistant"):
             st.markdown(full_response)
-        response = "Simulated response for demonstration."  # Simulated response
 
         st.session_state['questions'].append(prompt)
-        st.session_state['messages'][prompt].append({"role": "assistant", "content": prompt})
+        st.session_state['messages'][prompt].append({"role": "user", "content": prompt})
         print(st.session_state['questions'], st.session_state['messages'])
         st.session_state['questions'].append(full_response)
         st.session_state['messages'][full_response].append({"role": "assistant", "content": full_response})
