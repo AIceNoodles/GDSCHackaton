@@ -98,8 +98,9 @@ if mode == "Answer":
 
         with st.chat_message("assistant"):
             st.markdown(model_response)
-            for source in (f"[{i + 1}] {doc}" for i, doc in enumerate(used_docs)):
-                st.markdown(source)
+            for i, doc in enumerate(used_docs):
+                exp = st.expander(f"[{i + 1}]", expanded=False)
+                exp.write(doc)
 
         # print(st.session_state['questions'], st.session_state['messages'])
 else:
@@ -119,8 +120,9 @@ else:
 
         with st.chat_message("assistant"):
             st.markdown(model_response)
-            for source in (f"[{i + 1}] {doc}" for i, doc in enumerate(used_docs)):
-                st.markdown(source)
+            for i, doc in enumerate(used_docs):
+                exp = st.expander(f"[{i + 1}]", expanded=False)
+                exp.write(doc)
 
         st.session_state['questions'].append(model_response)
         st.session_state['messages'].append({"role": "assistant", "content": model_response})
