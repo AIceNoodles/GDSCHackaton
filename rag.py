@@ -8,7 +8,7 @@ from langchain_community.vectorstores.utils import DistanceStrategy
 from openai import OpenAI
 
 client = OpenAI()
-from prompt_generator import assemble_prompt
+from prompt_generator import assemble_prompt, assemble_correctness_prompt
 
 # files: list[dict]  # has a key "text" and other metadata keys
 
@@ -25,8 +25,6 @@ MARKDOWN_SEPARATORS = [
 ]
 
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
-
-
 
 
 def get_response_message(completion) -> str:
@@ -106,17 +104,25 @@ class RagInstance:
     # messages: list[dict]  # the conversation history
     # model: str  # the model to use for the completion
 
-    def query(self, user_query, expertise_level, messages):
+    def query(self, user_query, expertise_level, messages, is_correctness=False, original_question=None):
         if self.knowledge_vect_db:
             retrieved_docs = self.knowledge_vect_db.similarity_search(query=user_query, k=5)
         else:
             retrieved_docs = []
 
-        new_message = assemble_prompt(
-            [doc.page_content for doc in retrieved_docs],
-            user_query,
-            expertise_level=expertise_level,
-        )
+        if is_correctness is False:
+            new_message = assemble_prompt(
+                [doc.page_content for doc in retrieved_docs],
+                user_query,
+                expertise_level=expertise_level,
+            )
+        else:
+            new_message = assemble_correctness_prompt(
+                [doc.page_content for doc in retrieved_docs],
+                model_question=original_question,
+                user_input=user_query,
+                expertise_level=expertise_level,
+            )
 
         messages = messages + [{"role": "user", "content": new_message}]
 
