@@ -10,13 +10,14 @@ from collections import defaultdict
 
 st.title(f"AIce Tutor")
 
-
 # todo: why tf does this not work?
 if "rag_instance" not in st.session_state:
+    print("Creating new rag instance")
     st.session_state["rag_instance"] = RagInstance()
+
+
+print(st.session_state)
 rag_instance = st.session_state["rag_instance"]
-
-
 
 pages = []
 
@@ -48,6 +49,7 @@ if 'questions' not in st.session_state:
 
 if 'messages' not in st.session_state:
     st.session_state['messages'] = defaultdict(list)
+    #
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -83,11 +85,11 @@ else:
     mode = "Question"
     if prompt := st.chat_input("Ask a question:"):
         # Add question to session state
+
         with st.chat_message("user"):
             st.markdown(prompt)
         # Process the question
         # Here you would typically send the prompt to the AI model
-
         full_response, messages = rag_instance.query(prompt, "intermediate", [])
 
         with st.chat_message("assistant"):
