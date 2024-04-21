@@ -76,7 +76,7 @@ if mode == "Answer" and selected_question is not None:
         st.session_state['messages'][selected_question].append({"role": "assistant", "content": model_response})
         with st.chat_message("assistant"):
             st.markdown(prompt)
-        print(st.session_state['questions'], st.session_state['messages'])
+        # print(st.session_state['questions'], st.session_state['messages'])
 else:
     mode = "Question"
     if prompt := st.chat_input("Ask a question:"):
@@ -85,8 +85,25 @@ else:
             st.markdown(prompt)
         # Process the question
         # Here you would typically send the prompt to the AI model
+        full_response = ""
+        message_placeholder = st.empty()
+        for response in client.chat.completions.create(
+                model=st.session_state["openai_model"],
+                messages=[
+                    {"role": "user", "content": prompt}
+                ],
+                stream=True,
+        ):
+            full_response += (response.choices[0].delta.content or "")
+            # message_placeholder.markdown(full_response + "▌")
+        # message_placeholder.markdown(full_response)
+        with st.chat_message("assistant"):
+            st.markdown(full_response)
         response = "Simulated response for demonstration."  # Simulated response
 
         st.session_state['questions'].append(prompt)
         st.session_state['messages'][prompt].append({"role": "assistant", "content": prompt})
         print(st.session_state['questions'], st.session_state['messages'])
+        st.session_state['questions'].append(full_response)
+        st.session_state['messages'][full_response].append({"role": "assistant", "content": full_response})
+        # print(st.session_state['questions'], st.session_state['messages'])
