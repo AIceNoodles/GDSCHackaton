@@ -9,3 +9,17 @@ Within our app, users can set and keep track of specific learning objectives thr
 ## Under the hood
 
 To craft meaningful questions and ensure factuality of the feedback, SocrAItes leverages a cutting-edge Retrieval Augmented Generation system, which has been shown to drastically reduce hallucinations and lead to well-funded answers. We build a vector database of semantic embeddings based on the provided material and use retrieval to help the LLM guide the user, using a series of carefully crafted prompts and resorting to the OpenAI API to achieve state-of-the-art performance.
+
+## Demo
+
+To install our project, navigate to the root directory and run:
+
+```
+pip install -r requirements.txt
+```
+
+We have built a fully working proof of concept using Streamlit. To start it locally, run:
+
+```
+streamlit run main.py
+```
