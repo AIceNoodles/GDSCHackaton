@@ -136,4 +136,4 @@ class RagInstance:
 
         messages = messages + [{"role": "assistant", "content": response}]
 
-        return response, messages
+        return response, messages, [doc.page_content for doc in retrieved_docs]

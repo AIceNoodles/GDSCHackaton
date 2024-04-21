@@ -10,8 +10,6 @@ from collections import defaultdict
 
 st.title(f"AIce Tutor")
 
-rag_instance = RagInstance()
-
 pages = []
 
 # File uploader
@@ -22,9 +20,8 @@ if uploaded_file is not None:
         try:
             extracted_text = file_parser.from_file_to_document(uploaded_file)
 
-            rag_instance.expand_knowledge_vector_db(extracted_text)
+            # rag_instance.expand_knowledge_vector_db(extracted_text)
 
-            st.text_area(f"Extracted Text, type {type(pages)}", extracted_text, height=300)
         except Exception as e:
             st.error("Error processing the PDF file.")
             st.write(f"error is {str(e)}")
@@ -55,17 +52,25 @@ if mode == "Answer":
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
     if prompt := st.chat_input("Try to answer:"):
-        user_response = "some user response"
-        st.session_state['messages'].append({"role": "user", "content": user_response})
+        st.session_state['messages'].append({"role": "user", "content": prompt})
         with st.chat_message("user"):
-            st.markdown(user_response)
-        model_response, messages = rag_instance.query(prompt, "intermediate", st.session_state['messages'],
-                                                      is_correctness=True,
-                                                      original_question=st.session_state['questions'][-1])
+            st.markdown(prompt)
+
+        rag_instance = RagInstance()
+        retrieved_docs = file_parser.get_all_processed_files()
+        rag_instance.expand_knowledge_vector_db(retrieved_docs)
+
+        model_response, messages, used_docs = rag_instance.query(prompt, "intermediate", st.session_state['messages'],
+                                                                 is_correctness=True,
+                                                                 original_question=st.session_state['questions'][-1])
 
         st.session_state['messages'].append({"role": "assistant", "content": model_response})
+
         with st.chat_message("assistant"):
             st.markdown(model_response)
+            for source in (f"[{i + 1}] {doc}" for i, doc in enumerate(used_docs)):
+                st.markdown(source)
+
         # print(st.session_state['questions'], st.session_state['messages'])
 else:
     mode = "Question"
@@ -76,12 +81,18 @@ else:
             st.markdown(prompt)
         # full_response, messages = "Full question to user: " + prompt, st.session_state['messages'] +[{"role": "user", "content": "full_responseee : " + prompt}]
 
-        full_response, messages = rag_instance.query(prompt, "intermediate", [])
+        rag_instance = RagInstance()
+        retrieved_docs = file_parser.get_all_processed_files()
+        rag_instance.expand_knowledge_vector_db(retrieved_docs)
+
+        model_response, messages, used_docs = rag_instance.query(prompt, "intermediate", [])
 
         with st.chat_message("assistant"):
-            st.markdown(full_response)
+            st.markdown(model_response)
+            for source in (f"[{i + 1}] {doc}" for i, doc in enumerate(used_docs)):
+                st.markdown(source)
 
-        st.session_state['questions'].append(full_response)
-        st.session_state['messages'].append({"role": "assistant", "content": full_response})
+        st.session_state['questions'].append(model_response)
+        st.session_state['messages'].append({"role": "assistant", "content": model_response})
         print(st.session_state['questions'], st.session_state['messages'])
         # print(st.session_state['questions'], st.session_state['messages'])
