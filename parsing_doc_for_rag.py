@@ -3,6 +3,8 @@ import os
 #### Running Nougat to get the mmd in a folder called nougat_output
 output_dir = "nougat_output"
 input_dir = "uploaded_chapters"
+os.makedirs(output_dir, exist_ok=True)
+os.makedirs(input_dir, exist_ok=True)
 
 
 def run_nougat():
