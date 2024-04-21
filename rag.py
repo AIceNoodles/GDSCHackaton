@@ -26,13 +26,7 @@ MARKDOWN_SEPARATORS = [
 
 EMBEDDING_MODEL_NAME = "thenlper/gte-small"
 
-embedding_model = HuggingFaceEmbeddings(
-    model_name=EMBEDDING_MODEL_NAME,
-    multi_process=True,
-    model_kwargs={"device": "cpu"},
-    encode_kwargs={"normalize_embeddings": True},  # set True for cosine similarity
 
-)
 
 
 def get_response_message(completion) -> str:
@@ -42,6 +36,13 @@ def get_response_message(completion) -> str:
 class RagInstance:
     def __init__(self):
         self.knowledge_vect_db = None
+        self.embedding_model = HuggingFaceEmbeddings(
+            model_name=EMBEDDING_MODEL_NAME,
+            multi_process=True,
+            model_kwargs={"device": "cpu"},
+            encode_kwargs={"normalize_embeddings": True},  # set True for cosine similarity
+
+        )
 
     def create_vec_db(self, files):
         RAW_KNOWLEDGE_BASE = [
@@ -87,7 +88,7 @@ class RagInstance:
         )
 
         knowledge_vector_database = FAISS.from_documents(
-            docs_processed, embedding_model, distance_strategy=DistanceStrategy.COSINE
+            docs_processed, self.embedding_model, distance_strategy=DistanceStrategy.COSINE
         )
 
         return knowledge_vector_database
