@@ -1,6 +1,6 @@
 # SocrAItes
 
-SocrAItes is a RAG-powered application that guides users of all ages and backgrounds through an active process of discovery and learning, by asking targeted questions about a source and providing constructive feedback. Grounded in cognitive science research, our maieutic approach to education allows the user to build and test their understanding, accompanied by a knowledgeable tutor, while never leaving the driver seat.
+SocrAItes is a RAG-powered application that guides users of all ages and backgrounds through an active process of discovery and learning, by asking targeted questions about a source and providing constructive feedback. Grounded in cognitive science research [[1]](#1) [[2]](#2), our maieutic approach to education allows the user to build and test their understanding, accompanied by a knowledgeable tutor, while never leaving the driver seat.
 
 ## App Workflow
 
@@ -8,7 +8,7 @@ Within our app, users can set and keep track of specific learning objectives thr
 
 ## Under the hood
 
-To craft meaningful questions and ensure factuality of the feedback, SocrAItes leverages a cutting-edge Retrieval Augmented Generation system, which has been shown to drastically reduce hallucinations and lead to well-funded answers. We build a vector database of semantic embeddings based on the provided material and use retrieval to help the LLM guide the user, using a series of carefully crafted prompts and resorting to the OpenAI API to achieve state-of-the-art performance.
+To craft meaningful questions and ensure factuality of the feedback, SocrAItes leverages a cutting-edge Retrieval Augmented Generation system, which has been shown to drastically reduce hallucinations and lead to well-funded answers [[3]](#3). We build a vector database of semantic embeddings based on the provided material and use retrieval to help the LLM guide the user, using a series of carefully crafted prompts and resorting to the OpenAI API to achieve state-of-the-art performance.
 
 ## Demo
 
@@ -23,3 +23,18 @@ We have built a fully working proof of concept using Streamlit. To start it loca
 ```
 streamlit run main.py
 ```
+
+## References
+
+<a id="1">[1]</a>
+The critical importance of retrieval for learning, 2008.
+Jeffrey D Karpicke, Henry L Roediger 3rd
+
+<a id="2">[2]</a>
+Feedback enhances the positive effects and reduces the
+negative effects of multiple-choice testing, 2008.
+Butler, Andrew C. Roediger III, Henry L.
+
+<a id="3">[3]</a>
+Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks, 2020.
+Lewis et al.
